@@ -1,0 +1,14 @@
+title: Valid App 3
+version: 0.0.1
+maintainers:
+  - name: John Dows app3
+    email: john.dows@hotmail.com
+  - name: Peter Pan app3
+    email: peter.pan@gmail.com
+company: Microsoft Inc.
+website: https://www.microsoft.com
+source: https://github.com/random/repo
+license: Apache-2.0
+description: |
+  ### Interesting Title
+  Some Microsoft application content, and description

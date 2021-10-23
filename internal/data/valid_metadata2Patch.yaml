@@ -1,0 +1,14 @@
+title: Valid App 2 patched
+version: 1.0.3
+maintainers:
+  - name: AppTwo Maintainer
+    email: apptwo@hotmail.com
+  - name: AppForth Maintainer
+    email: appForth@hotmail.com
+company: Upbound Inc.
+website: https://upbound.io
+source: https://github.com/upbound/repo
+license: Apache-2.0
+description: |
+  ### Why app 4 is the best
+  This is an experiment

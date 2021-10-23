@@ -1,0 +1,13 @@
+title: App w/ missing version
+maintainers:
+  - name: John dows
+    email: john.dows@hotmail.com
+  - name: emmy jonason
+    email: emmy.jonason@gmail.com
+company: Company Inc.
+website: https://website.com
+source: https://github.com/company/repo
+license: Apache-2.0
+description: |
+  ### blob of markdown
+  More markdown

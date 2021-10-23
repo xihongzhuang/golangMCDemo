@@ -1,0 +1,8 @@
+title: Valid App 1 patched
+version: 0.1.4
+maintainers:
+  - name: firstmaintainer app1
+    email: firstmaintainer4@hotmail.com
+  - name: secondmaintainer app1
+    email: secondmaintainer3@gmail.com
+company: BrainCorp Inc.
