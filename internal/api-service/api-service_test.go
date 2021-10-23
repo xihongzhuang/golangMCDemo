@@ -57,6 +57,15 @@ func TestAPIServiceInstance_StartService(t *testing.T) {
 	for i, x := range arr {
 		t.Log(i, ":", x)
 	}
+	epFaked := fmt.Sprintf("%s/fakeId1", ep)
+	request, err = http.NewRequest(http.MethodDelete, epFaked, nil)
+	require.NoError(t, err)
+	response, err = client.Do(request)
+	require.NoError(t, err)
+	respdata, err = ioutil.ReadAll(response.Body)
+	t.Log("deleteFakedId request response:", string(respdata))
+	response.Body.Close()
+
 	ep1 := fmt.Sprintf("%s/%s", ep, arr[0].Id)
 	request, err = http.NewRequest(http.MethodDelete, ep1, nil)
 	require.NoError(t, err)
