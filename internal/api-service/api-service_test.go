@@ -57,6 +57,29 @@ func TestAPIServiceInstance_StartService(t *testing.T) {
 	for i, x := range arr {
 		t.Log(i, ":", x)
 	}
+	ep1 := fmt.Sprintf("%s/%s", ep, arr[0].Id)
+	request, err = http.NewRequest(http.MethodDelete, ep1, nil)
+	require.NoError(t, err)
+	response, err = client.Do(request)
+	require.NoError(t, err)
+	respdata, err = ioutil.ReadAll(response.Body)
+	t.Log("request response:", string(respdata))
+	response.Body.Close()
+
+	//Delete 1 record, there should be only 1 left
+	request, err = http.NewRequest(http.MethodGet, ep, nil)
+	require.NoError(t, err)
+	response, err = client.Do(request)
+	require.NoError(t, err)
+	respdata, err = ioutil.ReadAll(response.Body)
+	t.Log("after delete 1, request response:", string(respdata))
+	response.Body.Close()
+	var arr2 []AppMetaData
+	yaml.Unmarshal(respdata, &arr2)
+	require.Len(t, arr2, 1)
+	for i, x := range arr2 {
+		t.Log(i, ":", x)
+	}
 
 	instance.Shutdown(context.Background())
 }

@@ -1,5 +1,8 @@
 # golangMCDemo
-coding exercise for Microsoft
+This is a coding exercise for Microsoft
+It hosts RESTful API Server for application metadata in a inmemory database.
+Supported endpoints:
+http://dnsOfThisService:8080/api/appmetadata
 
 # build a docker image
 
@@ -20,6 +23,11 @@ make run
 ```
 curl -X POST --header 'content-type: application/x-yml' --data-binary @../../internal/data/valid_metadata1.yaml --url "http://localhost:8080/api/appmetadata"
 curl -X POST --header 'content-type: application/x-yml' --data-binary @../../internal/data/valid_metadata2.yaml --url "http://localhost:8080/api/appmetadata"
+```
+Upon success of each curl POST, an entry with an uniquely assigned id will be created in the API server, and respond in yaml.
+ 
+# Verify the following invalid input should return errors
+```
 curl -X POST --header 'content-type: application/x-yml' --data-binary @../../internal/data/invalid_appmetadata1.yaml --url "http://localhost:8080/api/appmetadata"
 should response : "invalid maintainer email"
 curl -X POST --header 'content-type: application/x-yml' --data-binary @../../internal/data/invalid_appmetadata2.yaml --url "http://localhost:8080/api/appmetadata"
@@ -40,6 +48,10 @@ curl -X PUT --header 'content-type: application/x-yml' --data-binary @../../inte
 
 ```
 curl -X PATCH --header 'content-type: application/x-yml' --data-binary @./data/valid_metadata1Patch.yaml --url "http://localhost:8080/api/appmetadata/abu24BqqnPYdViRFBNihvA"
+```
+# Delete an Entry
+```
+curl -X DELETE "http://localhost:8080/api/appmetadata/$entry_id"
 ```
 
 # Unit Test outside the docker:

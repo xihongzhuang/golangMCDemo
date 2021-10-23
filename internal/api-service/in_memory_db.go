@@ -4,17 +4,20 @@ import (
 	"errors"
 	"net/url"
 	"strings"
+	"sync"
 
 	"gopkg.in/yaml.v3"
 )
 
 type InMemoryAppStore struct {
-	db map[string]*AppMetaData
+	lock sync.RWMutex
+	db   map[string]*AppMetaData
 }
 
 func NewInMemoryAppStore() *InMemoryAppStore {
 	return &InMemoryAppStore{
-		db: make(map[string]*AppMetaData),
+		lock: sync.RWMutex{},
+		db:   make(map[string]*AppMetaData),
 	}
 }
 
@@ -23,7 +26,9 @@ func (s *InMemoryAppStore) Create(yamlPayload []byte) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+	s.lock.Lock()
 	s.db[entry.Id] = entry
+	s.lock.Unlock()
 	encodedStr, err := yaml.Marshal(entry)
 	if err != nil {
 		return nil, err
@@ -34,6 +39,8 @@ func (s *InMemoryAppStore) Create(yamlPayload []byte) ([]byte, error) {
 var ErrNotFound = errors.New("metadata not found")
 
 func (s *InMemoryAppStore) Get(id string) ([]byte, error) {
+	s.lock.RLock()
+	defer s.lock.RUnlock()
 	if entry, ok := s.db[id]; !ok {
 		return nil, ErrNotFound
 	} else {
@@ -45,8 +52,18 @@ func (s *InMemoryAppStore) Get(id string) ([]byte, error) {
 	}
 }
 
-//Please note this search is inefficient, as there is no index to assist the search, The Time complexity
-//is O(N), N is the number of entries in the DB
+func (s *InMemoryAppStore) Delete(id string) error {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+	if _, ok := s.db[id]; !ok {
+		return ErrNotFound
+	}
+	delete(s.db, id)
+	return nil
+}
+
+//TODO: Please note this search is inefficient, as there is no index to assist the search, The Time complexity
+// is O(N), N is the number of entries in the DB
 
 func matchCondition(m *AppMetaData, params url.Values) bool {
 	if len(params) == 0 {
@@ -80,6 +97,8 @@ func matchCondition(m *AppMetaData, params url.Values) bool {
 }
 
 func (s *InMemoryAppStore) GetAll2Yaml(params url.Values) ([]byte, error) {
+	s.lock.RLock()
+	defer s.lock.RUnlock()
 	if len(s.db) == 0 {
 		return []byte(""), nil
 	}
@@ -97,13 +116,13 @@ func (s *InMemoryAppStore) GetAll2Yaml(params url.Values) ([]byte, error) {
 }
 
 func (s *InMemoryAppStore) Update(id string, yamlPayload []byte) ([]byte, error) {
-	if _, ok := s.db[id]; !ok {
-		return nil, ErrNotFound
-	}
 	entry, err := LoadFrom(yamlPayload)
 	if err != nil {
 		return nil, err
 	}
+	//for PUT, a new record will be created if not exists
+	s.lock.Lock()
+	defer s.lock.Unlock()
 	s.db[id] = entry
 	encodedStr, err := yaml.Marshal(entry)
 	if err != nil {
@@ -115,14 +134,16 @@ func (s *InMemoryAppStore) Update(id string, yamlPayload []byte) ([]byte, error)
 //partially update
 
 func (s *InMemoryAppStore) Patch(id string, yamlPayload []byte) ([]byte, error) {
-	entry, ok := s.db[id]
-	if !ok {
-		return nil, ErrNotFound
-	}
 	newMt := AppMetaData{}
 	err := yaml.Unmarshal(yamlPayload, &newMt)
 	if err != nil {
 		return nil, err
+	}
+	s.lock.Lock()
+	defer s.lock.Unlock()
+	entry, ok := s.db[id]
+	if !ok {
+		return nil, ErrNotFound
 	}
 	if newMt.Title != "" {
 		entry.Title = newMt.Title

@@ -2,6 +2,7 @@ package api_service
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -102,13 +103,22 @@ func (ap *APIServiceInstance) StartService() error {
 			return
 		}
 		log.Println(" request ", id)
-		r, err := ap.appStore.Get(id)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
+		if req.Method == http.MethodGet {
+			r, err := ap.appStore.Get(id)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			w.Write(r)
+		} else {
+			err := ap.appStore.Delete(id)
+			if err != nil && errors.Is(err, ErrNotFound) {
+				http.Error(w, err.Error(), http.StatusNotFound)
+				return
+			}
+			w.Write([]byte(fmt.Sprintf("entry %s was deleted", id)))
 		}
-		w.Write(r)
-	}).Methods(http.MethodGet)
+	}).Methods(http.MethodGet, http.MethodDelete)
 
 	//Update
 
