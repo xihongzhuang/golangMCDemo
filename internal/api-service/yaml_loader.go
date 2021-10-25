@@ -64,6 +64,9 @@ func LoadFrom(data []byte) (*AppMetaData, error) {
 	if mt.Version == "" {
 		return nil, ErrEmptyVersion
 	}
+	if mt.Company == "" {
+		return nil, ErrEmptyCompany
+	}
 	for _, p := range mt.Maintainers {
 		if !IsValidEmail(p.Email) {
 			return nil, ErrInvalidEmail
