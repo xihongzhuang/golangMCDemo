@@ -13,7 +13,8 @@ import (
 )
 
 var (
-	ErrEmptyVersion = errors.New("empty version")
+	ErrEmptyVersion = errors.New("empty version is invalid")
+	ErrEmptyCompany = errors.New("empty company is invalid")
 	ErrInvalidEmail = errors.New("invalid maintainer email")
 )
 
@@ -75,11 +76,11 @@ func LoadFrom(data []byte) (*AppMetaData, error) {
 }
 
 func LoadAppMeta(fileName string) (*AppMetaData, error) {
-	yfile, err := ioutil.ReadFile(fileName)
+	yFileBytes, err := ioutil.ReadFile(fileName)
 	if err != nil {
 		return nil, err
 	}
-	return LoadFrom(yfile)
+	return LoadFrom(yFileBytes)
 }
 
 func StructToMap(item interface{}) map[string]interface{} {

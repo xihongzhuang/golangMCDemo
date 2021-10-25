@@ -1,8 +1,10 @@
 # golangMCDemo
 This is a coding exercise for Microsoft
-It hosts RESTful API Server for application metadata in a inmemory database.
+This is just a simple RESTful API Service. Authentication and Authorization are out of scope here.
+It hosts a RESTful API Server for application metadata in a inmemory database.
 Supported endpoints:
-http://dnsOfThisService:8080/api/appmetadata
+http://localhost:8080/api/appmetadata
+Support standard CRUD Method: GET, POST, PUT, PATCH, DELETE 
 
 # build a docker image
 
@@ -11,7 +13,6 @@ cd cmd/simple-rest-service
 make build
 ```
 note: dockerize this API service will allow this service to be deployed by kubernetes to the cloud
-
 
 # start the docker instance that hosts this service
 
@@ -68,7 +69,11 @@ curl "http://localhost:8080/api/appmetadata?title=Valid&version=1.0.1"
 
 # field contains substr, syntax: field=in:substr
 
-```
 search for records in which the company field contains substring "microsoft"
+```
 curl "http://localhost:8080/api/appmetadata?company=in:Microsoft"
+```
+search for records whose version=1.0.1
+```
+curl "http://localhost:8080/api/appmetadata?version=1.0.1"
 ```
