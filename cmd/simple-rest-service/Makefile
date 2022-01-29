@@ -9,6 +9,10 @@ install:
 	go build -o ./$(EXE) .
 	#go build -o $(GOBIN)/$(EXE) .
 
+.PHONY: install
+clear:
+	rm ./$(EXE)
+
 SVR_ID := $(shell docker ps -f name=$(SVR) -q)
 .PHONY: run
 run:

@@ -48,15 +48,11 @@ func (ap *APIServiceInstance) Shutdown(ctx context.Context) {
 
 func ValidateRequest(req *http.Request) bool {
 	isYaml := false
-	if v, ok := req.Header["content-type"]; ok {
-		for _, s := range v {
-			if strings.Contains(s, "application/x-yml") || strings.Contains(s, "application/yaml") {
-				isYaml = true
-			}
+	if s := req.Header.Get("content-type"); s != "" {
+		s = strings.ToLower(s)
+		if strings.Contains(s, "application/x-yml") || strings.Contains(s, "application/yaml") {
+			isYaml = true
 		}
-	} else {
-		//default to yaml payload
-		isYaml = true
 	}
 	return isYaml
 }

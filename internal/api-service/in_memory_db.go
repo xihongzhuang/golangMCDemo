@@ -63,15 +63,17 @@ func (s *InMemoryAppStore) Delete(id string) error {
 }
 
 //TODO: Please note this search is inefficient, as there is no index to assist the search, The Time complexity
-// is O(N), N is the number of entries in the DB
+// is O(K*N), N is the number of entries in the DB, K is the number of items in params
 
 func matchCondition(m *AppMetaData, params url.Values) bool {
+	//if there is no condition provided, assign all records match the condition
 	if len(params) == 0 {
 		return true
 	}
 
 	mp := StructToMap(m)
 	allMatch := true
+	//we implement AND relationship only
 	for k, v := range params {
 		if v2, ok := mp[k]; !ok {
 			allMatch = false
